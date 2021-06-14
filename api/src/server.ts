@@ -28,6 +28,7 @@ app.get(
 );
 app.get('/allstatus', packageController.getStatusAll);
 app.get('/cluster/:voucher', packageController.getCluster);
+app.put('/scan/:voucher', packageController.scanPackage);
 
 app.listen(config.server.port, (): void => {
   console.log(

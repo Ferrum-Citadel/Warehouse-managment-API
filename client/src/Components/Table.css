@@ -1,0 +1,15 @@
+.grid {
+  width: 70vw;
+  margin: 50px auto;
+  border: 1px solid gray;
+}
+
+.grid .grid-row {
+  border-bottom: 1px solid gray;
+  display: flex;
+}
+
+.grid .grid-row .grid-column-4 {
+  width: 25%;
+  padding: 10px 0;
+}

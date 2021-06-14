@@ -191,19 +191,19 @@ export const statusMiddleware = async (
       const isDelivered = results[0].delivered;
       const IsEnroute = results[0].en_route;
       // Check package status from db
-      if (isScanned) {
-        res.locals.status = 200;
-        res.locals.message = {
-          message: 'Package waiting to be picked up by driver',
-        };
-        return next();
-      } else if (isDelivered) {
+      if (isDelivered) {
         res.locals.status = 200;
         res.locals.message = { message: 'Package is delivered' };
         return next();
       } else if (IsEnroute) {
         res.locals.status = 200;
         res.locals.message = { message: 'Package is en route to delivery' };
+        return next();
+      } else if (isScanned) {
+        res.locals.status = 200;
+        res.locals.message = {
+          message: 'Package waiting to be picked up by driver',
+        };
         return next();
       } else {
         res.locals.status = 200;
@@ -241,14 +241,20 @@ export const getStatusAll = async (
 ): Promise<Response> => {
   try {
     // Defining query
-    const query = 'SELECT voucher, scanned, en_route,delivered FROM Packages ';
+    const query =
+      'SELECT voucher, postcode, Clusters.name, scanned, en_route,delivered FROM Packages INNER JOIN Clusters ON Packages.cluster_id = Clusters.cluster_id ORDER BY voucher';
     // Awaiting connection to db
     const connection = await Connect();
     // Implementing the query
     const queryResults = await Query(connection, query);
 
     //Inline interface definition for returned status results
-    const statusArr: { voucher: string; status: string }[] = [];
+    const statusArr: {
+      voucher: string;
+      postcode: string;
+      cluster_name: string;
+      status: string;
+    }[] = [];
 
     // If the query returned results we check for the sttatus state
     if (queryResults.length !== 0) {
@@ -256,25 +262,27 @@ export const getStatusAll = async (
         const isScanned = pckg.scanned;
         const isDelivered = pckg.delivered;
         const IsEnroute = pckg.en_route;
+        const postcode = pckg.postcode as string;
+        const cluster_name = pckg.name as string;
         const voucher = pckg.voucher as string;
         // Check package status from db
-        if (isScanned) {
-          const status = 'Package waiting to be picked up by driver';
-          statusArr.push({ voucher, status });
-        } else if (isDelivered) {
+        if (isDelivered) {
           const status = 'Package is delivered';
-          statusArr.push({ voucher, status });
+          statusArr.push({ voucher, postcode, cluster_name, status });
         } else if (IsEnroute) {
           const status = 'Package is en route to delivery';
-          statusArr.push({ voucher, status });
+          statusArr.push({ voucher, postcode, cluster_name, status });
+        } else if (isScanned) {
+          const status = 'Package Scanned and waiting for delivery';
+          statusArr.push({ voucher, postcode, cluster_name, status });
         } else {
           const status = 'Not scanned';
-          statusArr.push({ voucher, status });
+          statusArr.push({ voucher, postcode, cluster_name, status });
         }
       });
       return res.status(200).json({ statusArr });
     } else {
-      return res.status(404).json({ error: 'Not in Stock' });
+      return res.status(404).json({ message: 'No stock' });
     }
   } catch (err) {
     return res.status(500).json({
@@ -307,6 +315,43 @@ export const getCluster = async (
     // Implementing the query
     const results = await Query(connection, query);
     return res.status(200).json({ results });
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message,
+      error,
+    });
+  }
+};
+
+export const scanPackage = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  try {
+    const voucherRexp = new RegExp(`[A-Z]+[0-9]+[A-Z]`);
+    if (voucherRexp.test(req.params.voucher) === false) {
+      return res
+        .status(400)
+        .json({ message: 'Valid vouchers are in the form: [A-Z]+[0-9]+[A-Z]' });
+    }
+    const query = mysql.format(
+      'UPDATE Packages SET scanned=TRUE WHERE voucher=?',
+      [req.params.voucher]
+    );
+
+    const connection = await Connect();
+
+    let results = await Query(connection, query);
+
+    results = JSON.parse(JSON.stringify(results));
+    //If no rows were affected there is no package with such voucher
+
+    if ((results as any).affectedRows === 0) {
+      return res
+        .status(400)
+        .json({ message: 'No package with given voucher was found' });
+    }
+    return res.status(200).json({ message: 'Voucher scanned successfully' });
   } catch (error) {
     return res.status(500).json({
       message: error.message,
