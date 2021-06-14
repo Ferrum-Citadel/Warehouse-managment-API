@@ -347,11 +347,111 @@ export const scanPackage = async (
     //If no rows were affected there is no package with such voucher
 
     if ((results as any).affectedRows === 0) {
+      return res.status(400).json({ message: 'No such package found' });
+    }
+    return res.status(200).json({ message: 'Voucher scanned successfully' });
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message,
+      error,
+    });
+  }
+};
+
+export const setEnRoute = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  try {
+    //Checking if voucher is valid
+    const voucherRexp = new RegExp(`[A-Z]+[0-9]+[A-Z]`);
+    if (voucherRexp.test(req.params.voucher) === false) {
+      return res
+        .status(400)
+        .json({ message: 'Valid vouchers are in the form: [A-Z]+[0-9]+[A-Z]' });
+    }
+
+    const connection = await Connect();
+
+    //Checking if the given package exist in db and  is scanned
+    let query = mysql.format('SELECT scanned FROM Packages WHERE voucher=?', [
+      req.params.voucher,
+    ]);
+    let results = await Query(connection, query);
+
+    // Checking if such package exists first
+    if (results.length === 0) {
       return res
         .status(400)
         .json({ message: 'No package with given voucher was found' });
     }
-    return res.status(200).json({ message: 'Voucher scanned successfully' });
+
+    // And now checking if its scanned
+    const isScanned = results[0].scanned;
+    if (!isScanned) {
+      return res.status(400).json({
+        message: 'The given voucher does not correspond to any scanned package',
+      });
+    }
+    //If the package exists and is scanned then we set en route
+    query = mysql.format('UPDATE Packages SET en_route=TRUE WHERE voucher=?', [
+      req.params.voucher,
+    ]);
+
+    results = await Query(connection, query);
+
+    return res.status(200).json({ message: 'Voucher is en route to delivery' });
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message,
+      error,
+    });
+  }
+};
+
+export const setDelivered = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  try {
+    //Checking if voucher is valid
+    const voucherRexp = new RegExp(`[A-Z]+[0-9]+[A-Z]`);
+    if (voucherRexp.test(req.params.voucher) === false) {
+      return res
+        .status(400)
+        .json({ message: 'Valid vouchers are in the form: [A-Z]+[0-9]+[A-Z]' });
+    }
+
+    const connection = await Connect();
+
+    //Checking if the given package exist in db and  is scanned
+    let query = mysql.format('SELECT scanned FROM Packages WHERE voucher=?', [
+      req.params.voucher,
+    ]);
+    let results = await Query(connection, query);
+
+    // Checking if such package exists first
+    if (results.length === 0) {
+      return res
+        .status(400)
+        .json({ message: 'No package with given voucher was found' });
+    }
+
+    // And now checking if its scanned
+    const isScanned = results[0].scanned;
+    if (!isScanned) {
+      return res.status(400).json({
+        message: 'The given voucher does not correspond to any scanned package',
+      });
+    }
+    //If the package exists and is scanned then we set en route
+    query = mysql.format('UPDATE Packages SET en_route=TRUE WHERE voucher=?', [
+      req.params.voucher,
+    ]);
+
+    results = await Query(connection, query);
+
+    return res.status(200).json({ message: 'Voucher is en route to delivery' });
   } catch (error) {
     return res.status(500).json({
       message: error.message,

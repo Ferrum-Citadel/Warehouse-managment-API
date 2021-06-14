@@ -4,8 +4,9 @@ function Form() {
   const [value, setValue] = useState('');
   const [message, setMessage] = useState('');
 
-  async function handleSubmit() {
+  async function handleSubmit(event) {
     try {
+      event.preventDefault();
       const response = fetch(`/scan/${value}`, { method: 'PUT' })
         .then((response) => response.json())
         .then((response) => {

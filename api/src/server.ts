@@ -15,7 +15,8 @@ app.use(helmet());
 app.use(express.json());
 app.use(urlencoded({ extended: false }));
 
-//App routes
+/*--------------------------------------------------------------------------- */
+//Package GET routes
 app.get('/package/all', packageController.getAll);
 app.get('/package/scanned', packageController.getScanned);
 app.get('/package/unscanned', packageController.getUnscanned);
@@ -28,7 +29,9 @@ app.get(
 );
 app.get('/allstatus', packageController.getStatusAll);
 app.get('/cluster/:voucher', packageController.getCluster);
+//Package PUT routes
 app.put('/scan/:voucher', packageController.scanPackage);
+app.put('/enroute/:voucher', packageController.setEnRoute);
 
 app.listen(config.server.port, (): void => {
   console.log(
