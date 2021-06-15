@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { TextField } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
+import Divider from '@material-ui/core/Divider';
 
 function Form() {
   const [value, setValue] = useState('');
@@ -34,8 +35,10 @@ function Form() {
   return (
     <>
       <h1>Skroutz Last Mile assignment</h1>
-      <h2>Vaoucher input</h2>
-      <form onSubmit={handleSubmit}>
+      <Divider variant="middle" />
+      <h2 style={{ marginTop: '50px' }}>Voucher input </h2>
+
+      <form className="form" onSubmit={handleSubmit}>
         {/* <input
           type="text"
           spellCheck="false"
@@ -43,18 +46,30 @@ function Form() {
           onChange={handleChange}
         /> */}
         <TextField
-          variant="outlined"
           label="Voucher"
+          variant="outlined"
+          color="primary"
           size="small"
           type="text"
           spellCheck="False"
           value={value}
           onChange={handleChange}
         />
-        {/* <button type="submit">Scan</button> */}
-        <Button variant="outlined" type="submit" color="primary">
+
+        <Button
+          variant="outlined"
+          type="submit"
+          color="primary"
+          style={{
+            display: 'block',
+            marginLeft: 'auto',
+            marginRight: 'auto',
+            marginTop: '10px',
+          }}
+        >
           Scan
         </Button>
+
         <p>{message}</p>
       </form>
     </>

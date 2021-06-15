@@ -3,7 +3,7 @@ import { Connect, Query } from '../config/mysql';
 import mysql from 'mysql2';
 
 // Controller that returns all packages from database
-export const getAll = async (
+export const getPackages = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
@@ -155,20 +155,20 @@ export const getStatusOne = async (
   }
 };
 
-export const getStatusAll = async (
+export const getAll = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
   try {
     // Defining query
     const query =
-      'SELECT p.voucher, p.postcode, p.scanned, p.en_route, p.delivered, c.name, d.name AS driver_name FROM Packages AS p JOIN Clusters AS c ON p.cluster_id = c.cluster_id JOIN Drivers AS d ON c.cluster_id=d.cluster_id ORDER BY p.voucher';
+      'SELECT p.voucher, p.postcode, p.scanned, p.en_route, p.delivered, c.name, d.name AS driver_name, d.available AS driver_status FROM Packages AS p JOIN Clusters AS c ON p.cluster_id = c.cluster_id JOIN Drivers AS d ON c.cluster_id=d.cluster_id ORDER BY p.voucher';
 
     // Awaiting connection to db
     const connection = await Connect();
     // Implementing the query
     const queryResults = await Query(connection, query);
-    console.log(queryResults);
+
     //Inline interface definition for returned status results
     const statusArr: {
       voucher: string;
@@ -176,6 +176,7 @@ export const getStatusAll = async (
       cluster_name: string;
       status: string;
       driver: string;
+      driver_status: string;
     }[] = [];
 
     // If the query returned results we check for the sttatus state
@@ -188,6 +189,14 @@ export const getStatusAll = async (
         const cluster_name = pckg.name as string;
         const voucher = pckg.voucher as string;
         const driver = pckg.driver_name as string;
+        const available = pckg.driver_status as number;
+
+        let driver_status: string;
+        if (available) {
+          driver_status = 'Available';
+        } else {
+          driver_status = 'Unavailable';
+        }
 
         let status: string;
         // Check package status from db
@@ -200,7 +209,14 @@ export const getStatusAll = async (
         } else {
           status = 'Not scanned';
         }
-        statusArr.push({ voucher, postcode, cluster_name, status, driver });
+        statusArr.push({
+          voucher,
+          postcode,
+          cluster_name,
+          status,
+          driver,
+          driver_status,
+        });
       });
       connection.end();
       return res.status(200).json({ statusArr });

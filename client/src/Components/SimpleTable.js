@@ -12,9 +12,11 @@ import Button from '@material-ui/core/Button';
 
 function SimpleTable() {
   const [packages, setPackages] = useState([]);
+  const [message, setMessage] = useState([]);
 
+  // Returns all database data
   function getResults() {
-    fetch('/allstatus')
+    fetch('/all')
       .then((response) => response.json())
       .then((response) => {
         setPackages(response.statusArr); //Set api response into state
@@ -31,47 +33,39 @@ function SimpleTable() {
     return () => clearInterval(refresh);
   }, []);
 
-  const handleEdit = (values) => {
-    console.log('The Values that you wish to edit ', values);
+  // Sets Package enRoute
+  const handleEnRoute = (voucher) => {
+    fetch(`/enroute/${voucher}`, { method: 'PUT' })
+      .then((response) => response.json())
+      .then((response) => {
+        if (response.message) {
+          setMessage(voucher + ' -' + response.message);
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+      });
   };
 
-  // return (
-  //   <>
-  //     <div className="grid">
-  //       <div className="grid-row">
-  //         <div className="grid-column-title">Voucher</div>
-  //         <div className="grid-column-title">Postcode</div>
-  //         <div className="grid-column-title">Cluster</div>
-  //         <div className="grid-column-title">Driver</div>
-  //         <div className="grid-column-title">Status</div>
-  //       </div>
-  //       {packages.length
-  //         ? packages.map((item) => (
-  //             <div key={nanoid(5)} className="grid-row">
-  //               <div key={nanoid(5)} className="grid-column-4">
-  //                 {item.voucher}
-  //               </div>
-  //               <div key={nanoid(5)} className="grid-column-4">
-  //                 {item.postcode}
-  //               </div>
-  //               <div key={nanoid(5)} className="grid-column-4">
-  //                 {item.cluster_name}
-  //               </div>
-  //               <div key={nanoid(5)} className="grid-column-4">
-  //                 {item.driver}
-  //               </div>
-  //               <div key={nanoid(5)} className="grid-column-4">
-  //                 {item.status}
-  //               </div>
-  //             </div>
-  //           ))
-  //         : null}
-  //     </div>
-  //     {/* <button className="refresh-button" type="button" onClick={getResults}>
-  //       Refresh Status
-  //     </button> */}
-  //   </>
-  // );
+  // Sets Package delivered
+  const handleDelivered = (voucher) => {
+    fetch(`/delivered/${voucher}`, { method: 'PUT' })
+      .then((response) => response.json())
+      .then((response) => {
+        if (response.message) {
+          setMessage(voucher + ' -' + response.message);
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  };
+
+  const handleReset = () => {
+    fetch(`/reset`, { method: 'DELETE' }).catch((err) => {
+      console.error(err);
+    });
+  };
 
   return (
     <div className="container">
@@ -82,8 +76,9 @@ function SimpleTable() {
               <TableCell>Voucher</TableCell>
               <TableCell align="right">Postcode</TableCell>
               <TableCell align="right">Cluster</TableCell>
+              <TableCell align="center"> Package Status</TableCell>
               <TableCell align="right">Driver</TableCell>
-              <TableCell align="center">Status</TableCell>
+              <TableCell align="center"> Driver Status</TableCell>
               <TableCell align="center">Actions</TableCell>
             </TableRow>
           </TableHead>
@@ -95,24 +90,43 @@ function SimpleTable() {
                 </TableCell>
                 <TableCell align="right">{row.postcode}</TableCell>
                 <TableCell align="right">{row.cluster_name}</TableCell>
-                <TableCell align="right">{row.driver}</TableCell>
                 <TableCell align="center">{row.status}</TableCell>
+                <TableCell align="right">{row.driver}</TableCell>
+                <TableCell align="center">{row.driver_status}</TableCell>
+
                 <TableCell align="center">
-                  <Button aria-label="edit" onClick={() => handleEdit(1)}>
-                    Edit
+                  <Button
+                    aria-label="edit"
+                    onClick={() => handleEnRoute(row.voucher)}
+                  >
+                    Set Enroute
                   </Button>
-                  <Button aria-label="edit" onClick={() => handleEdit(1)}>
-                    Edit
-                  </Button>
-                  <Button aria-label="edit" onClick={() => handleEdit(1)}>
-                    Edit
+                  <Button
+                    aria-label="edit"
+                    onClick={() => handleDelivered(row.voucher)}
+                  >
+                    Set Delivered
                   </Button>
                 </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
+        <p>{message}</p>
       </TableContainer>
+      <Button
+        variant="outlined"
+        type="button"
+        color="primary"
+        style={{
+          display: 'block',
+          marginLeft: 'auto',
+          marginRight: 'auto',
+        }}
+        onClick={handleReset}
+      >
+        Reset
+      </Button>
     </div>
   );
 }

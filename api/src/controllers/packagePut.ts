@@ -50,25 +50,103 @@ export const scanPackage = async (
   }
 };
 
+// const simulateDelivery = async (
+//   connection: mysql.Connection,
+//   voucher: string
+// ): Promise<boolean> => {
+//   try {
+//     const query = mysql.format(
+//       `SELECT d.name, d.available
+//   FROM Packages p JOIN Drivers d ON p.cluster_id=d.cluster_id
+//   WHERE  p.voucher = ? AND p.en_route =FALSE AND p.delivered =FALSE
+//   ORDER BY d.name;`,
+//       [voucher]
+//     );
+
+//     const results = await Query(connection, query);
+
+//     const available = (results[0] as any).available;
+//     const driver = (results[0] as any).name;
+
+//     if (available) {
+//       const query = mysql.format(
+//         `UPDATE Drivers SET available=FALSE where name=?`,
+//         [driver]
+//       );
+//       await Query(connection, query);
+
+//       const deliveryTime: number = Math.floor(
+//         Math.random() * (10000 - 5000 + 1) + 5000
+//       );
+
+//       setTimeout((): void => {
+//         const query = mysql.format(
+//           `UPDATE Drivers SET available=TRUE where name=?`,
+//           [driver]
+//         );
+//         Query(connection, query);
+//         connection.end();
+//       }, deliveryTime);
+//       return true;
+//     }
+//     return false;
+//   } catch (err) {
+//     console.error(err);
+//     return false;
+//   }
+// };
+
+const simulateDelivery = async (
+  connection: mysql.Connection,
+  voucher: string
+): Promise<boolean> => {
+  try {
+    const query = mysql.format(
+      `SELECT d.name, d.available 
+  FROM Packages p JOIN Drivers d ON p.cluster_id=d.cluster_id 
+  WHERE  p.voucher = ?
+  ORDER BY d.name;`,
+      [voucher]
+    );
+
+    const results = await Query(connection, query);
+
+    const available = (results[0] as any).available;
+    const driver = (results[0] as any).name;
+
+    if (available) {
+      const query = mysql.format(
+        `UPDATE Drivers SET available=FALSE where name=?`,
+        [driver]
+      );
+      await Query(connection, query);
+
+      return true;
+    }
+    return false;
+  } catch (err) {
+    console.error(err);
+    return false;
+  }
+};
+
 export const setEnRoute = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
   try {
     const connection = await Connect();
-
     //Checking if the given package exist in db and  is scanned
     let query = mysql.format(
       'SELECT scanned,en_route,delivered FROM Packages WHERE voucher=?',
       [req.params.voucher]
     );
-    let results = await Query(connection, query);
+    const results = await Query(connection, query);
 
     // Checking if such package exists first
     if (results.length === 0) {
       return res.status(400).json({ message: 'No such package found' });
     }
-
     const isScanned = results[0].scanned;
     const isEnRoute = results[0].en_route;
     const isDelivered = results[0].delivered;
@@ -86,16 +164,24 @@ export const setEnRoute = async (
         message: 'The given voucher does not correspond to any scanned package',
       });
     }
-    //If the package exists and is scanned then we set en route
-    query = mysql.format('UPDATE Packages SET en_route=TRUE WHERE voucher=?', [
-      req.params.voucher,
-    ]);
 
-    results = await Query(connection, query);
-
-    connection.end;
-
-    return res.status(200).json({ message: 'Package is en route to delivery' });
+    // If the driver is available we simulate delivery
+    if (await simulateDelivery(connection, req.params.voucher)) {
+      //If the package exists and is scanned then we set en route
+      query = mysql.format(
+        'UPDATE Packages SET en_route=TRUE WHERE voucher=?',
+        [req.params.voucher]
+      );
+      await Query(connection, query);
+      connection.end;
+      return res
+        .status(200)
+        .json({ message: 'Package is en route to delivery' });
+    }
+    connection.end();
+    return res
+      .status(409)
+      .json({ message: 'Cannot deliver, driver is unavailable' });
   } catch (error) {
     return res.status(500).json({
       message: error.message,
@@ -147,6 +233,23 @@ export const setDelivered = async (
     );
 
     results = await Query(connection, query);
+
+    query = mysql.format(
+      `SELECT d.name, d.available 
+        FROM Packages p JOIN Drivers d ON p.cluster_id=d.cluster_id 
+        WHERE  p.voucher = ?
+        ORDER BY d.name;`,
+      [req.params.voucher]
+    );
+
+    results = await Query(connection, query);
+    console.log(results);
+    const driver = (results[0] as any).name;
+
+    query = mysql.format(`UPDATE Drivers SET available=TRUE WHERE name=?`, [
+      driver,
+    ]);
+    Query(connection, query);
     connection.end();
     return res.status(200).json({ message: 'Package is delivered' });
   } catch (error) {
