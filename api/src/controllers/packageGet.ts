@@ -155,6 +155,7 @@ export const getStatusOne = async (
   }
 };
 
+// Controller for getting all the information projected on the front-end
 export const getAll = async (
   req: Request,
   res: Response
@@ -209,6 +210,7 @@ export const getAll = async (
         } else {
           status = 'Not scanned';
         }
+        // Pushing needed information to a new array that will returned
         statusArr.push({
           voucher,
           postcode,

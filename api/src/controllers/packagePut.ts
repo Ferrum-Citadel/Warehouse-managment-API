@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { Connect, Query } from '../config/mysql';
 import mysql from 'mysql2';
 
+// Controller for validating given vouchers using RegEx
 export const validateVoucher = (
   req: Request,
   res: Response,
@@ -16,6 +17,7 @@ export const validateVoucher = (
   return next();
 };
 
+// Sets Packages as scanned if they are valid and found
 export const scanPackage = async (
   req: Request,
   res: Response
@@ -27,12 +29,10 @@ export const scanPackage = async (
     );
 
     const connection = await Connect();
-
     let results = await Query(connection, query);
-
     connection.end();
-
     results = JSON.parse(JSON.stringify(results));
+
     //If no rows were affected there is no package with such voucher
     if ((results as any).affectedRows === 0) {
       return res.status(400).json({ message: 'No such package found' });
@@ -96,6 +96,7 @@ export const scanPackage = async (
 //   }
 // };
 
+// Simulates a delivery driver picking up a package depending their availability
 const simulateDelivery = async (
   connection: mysql.Connection,
   voucher: string
@@ -130,6 +131,7 @@ const simulateDelivery = async (
   }
 };
 
+// Sets packages in route to delivery
 export const setEnRoute = async (
   req: Request,
   res: Response
@@ -151,6 +153,7 @@ export const setEnRoute = async (
     const isEnRoute = results[0].en_route;
     const isDelivered = results[0].delivered;
 
+    // Check current package status
     if (isDelivered) {
       return res.status(409).json({
         message: 'The package is already delivered',
@@ -174,11 +177,13 @@ export const setEnRoute = async (
       );
       await Query(connection, query);
       connection.end;
+
       return res
         .status(200)
         .json({ message: 'Package is en route to delivery' });
     }
     connection.end();
+
     return res
       .status(409)
       .json({ message: 'Cannot deliver, driver is unavailable' });
@@ -190,6 +195,7 @@ export const setEnRoute = async (
   }
 };
 
+// Sets packages as delivered
 export const setDelivered = async (
   req: Request,
   res: Response
@@ -209,10 +215,12 @@ export const setDelivered = async (
       return res.status(400).json({ message: 'No such package found' });
     }
 
-    // And now checking if its scanned ant  if its en_route
+    // And now checking if its scanned and  if its en_route
     const isScanned = results[0].scanned;
     const isEnRoute = results[0].en_route;
     const isDelivered = results[0].delivered;
+
+    //Check current package status
     if (isDelivered) {
       return res.status(409).json({
         message: 'The package is already delivered',
@@ -234,6 +242,7 @@ export const setDelivered = async (
 
     results = await Query(connection, query);
 
+    // Find assigned drivers name
     query = mysql.format(
       `SELECT d.name, d.available 
         FROM Packages p JOIN Drivers d ON p.cluster_id=d.cluster_id 
@@ -245,7 +254,7 @@ export const setDelivered = async (
     results = await Query(connection, query);
     console.log(results);
     const driver = (results[0] as any).name;
-
+    // Set driver as available after the package is delivered
     query = mysql.format(`UPDATE Drivers SET available=TRUE WHERE name=?`, [
       driver,
     ]);

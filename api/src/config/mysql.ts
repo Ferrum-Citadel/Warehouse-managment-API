@@ -8,6 +8,7 @@ const params = {
   database: config.mysql.database,
 };
 
+// Function that wraps MySql connection in a Promise
 const Connect = async (): Promise<mysql.Connection> =>
   await new Promise<mysql.Connection>((resolve, reject) => {
     const connection = mysql.createConnection(params);
@@ -22,6 +23,7 @@ const Connect = async (): Promise<mysql.Connection> =>
     });
   });
 
+// Function that wraps query execution in a Promise
 const Query = async (
   connection: mysql.Connection,
   query: string

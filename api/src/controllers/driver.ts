@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { Connect, Query } from '../config/mysql';
 import mysql from 'mysql2';
 
+// Returns all drivers
 export const getAll = async (
   req: Request,
   res: Response
@@ -19,7 +20,7 @@ export const getAll = async (
   }
 };
 
-//Returns the packages that the given driver need to pick up
+//Returns the packages that the given driver needs to pick up
 export const getAssignedPackages = async (
   req: Request,
   res: Response
@@ -42,6 +43,7 @@ export const getAssignedPackages = async (
   }
 };
 
+// Returns all drivers and their assigned packages
 export const getAllAssignedPackages = async (
   req: Request,
   res: Response

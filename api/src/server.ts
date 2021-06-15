@@ -16,7 +16,7 @@ const app: express.Application = express();
 app.use(helmet());
 app.use(express.json());
 app.use(urlencoded({ extended: false }));
-/*--------------------------------------------------------------------------- */
+//-------------------------------------------------------------------------------
 //Package GET routes
 app.get('/package/all', packageGetController.getPackages);
 app.get('/package/scanned', packageGetController.getScanned);
@@ -27,7 +27,7 @@ app.get('/status/:voucher', packageGetController.getStatusOne);
 app.get('/all', packageGetController.getAll);
 app.get('/cluster/:voucher', packageGetController.getCluster);
 
-//Package PUT routes
+//Package PUT routes-------------------------------------------------------------
 app.put(
   '/scan/:voucher',
   packageSetController.validateVoucher,
@@ -44,11 +44,11 @@ app.put(
   packageSetController.setDelivered
 );
 
-// Driver routes
+// Driver routes-----------------------------------------------------------------
 app.get('/driver/all', driverController.getAll);
 app.get('/driver/packages/:name', driverController.getAssignedPackages);
 
-//State route
+//State route--------------------------------------------------------------------
 app.delete('/reset', stateController.resetState);
 
 // Initiate http server
@@ -57,5 +57,3 @@ app.listen(config.server.port, (): void => {
     `Server is running on ${config.server.hostname}:${config.server.port}`
   );
 });
-
-//State route

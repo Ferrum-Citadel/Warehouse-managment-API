@@ -23,27 +23,41 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var express_1 = __importStar(require("express"));
-var config_1 = __importDefault(require("./config/config"));
-var dotenv_1 = __importDefault(require("dotenv"));
 var helmet_1 = __importDefault(require("helmet"));
-dotenv_1.default.config({ path: './config/.env' });
+var dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
+var config_1 = __importDefault(require("./config/config"));
 // Importing controllers
-var packageController = __importStar(require("./controllers/package"));
+var packageGetController = __importStar(require("./controllers/packageGet"));
+var packageSetController = __importStar(require("./controllers/packagePut"));
+var driverController = __importStar(require("./controllers/driver"));
+var stateController = __importStar(require("./controllers/state"));
 //Create Express server
 var app = express_1.default();
 // Express config
 app.use(helmet_1.default());
 app.use(express_1.default.json());
 app.use(express_1.urlencoded({ extended: false }));
-//App routes
-app.get('/package/all', packageController.getAll);
-app.get('/package/scanned', packageController.getScanned);
-app.get('/package/unscanned', packageController.getUnscanned);
-app.get('/package/enroute', packageController.getEnRoute);
-app.get('/package/delivered', packageController.getDelivered);
-app.get('/status/:voucher', packageController.statusMiddleware, packageController.getStatusOne);
-app.get('/allstatus', packageController.getStatusAll);
-app.get('/cluster/:voucher', packageController.getCluster);
+/*--------------------------------------------------------------------------- */
+//Package GET routes
+app.get('/package/all', packageGetController.getPackages);
+app.get('/package/scanned', packageGetController.getScanned);
+app.get('/package/unscanned', packageGetController.getUnscanned);
+app.get('/package/enroute', packageGetController.getEnRoute);
+app.get('/package/delivered', packageGetController.getDelivered);
+app.get('/status/:voucher', packageGetController.getStatusOne);
+app.get('/all', packageGetController.getAll);
+app.get('/cluster/:voucher', packageGetController.getCluster);
+//Package PUT routes
+app.put('/scan/:voucher', packageSetController.validateVoucher, packageSetController.scanPackage);
+app.put('/enroute/:voucher', packageSetController.validateVoucher, packageSetController.setEnRoute);
+app.put('/delivered/:voucher', packageSetController.validateVoucher, packageSetController.setDelivered);
+// Driver routes
+app.get('/driver/all', driverController.getAll);
+app.get('/driver/packages/:name', driverController.getAssignedPackages);
+//State route
+app.delete('/reset', stateController.resetState);
+// Initiate http server
 app.listen(config_1.default.server.port, function () {
     console.log("Server is running on " + config_1.default.server.hostname + ":" + config_1.default.server.port);
 });

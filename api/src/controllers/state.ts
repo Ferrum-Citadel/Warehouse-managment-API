@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { Connect, Query } from '../config/mysql';
 
+//Controller that resets the database state
 export const resetState = async (
   req: Request,
   res: Response
