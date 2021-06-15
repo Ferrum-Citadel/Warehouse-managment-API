@@ -76,28 +76,34 @@ function SimpleTable() {
   return (
     <div className="container">
       <TableContainer component={Paper}>
-        <Table className="table" aria-label="simple table">
+        <Table className="table" aria-label="simple table" size="small">
           <TableHead>
             <TableRow>
               <TableCell>Voucher</TableCell>
               <TableCell align="right">Postcode</TableCell>
               <TableCell align="right">Cluster</TableCell>
               <TableCell align="right">Driver</TableCell>
-              <TableCell align="right">Status</TableCell>
-              <TableCell align="right">Actions</TableCell>
+              <TableCell align="center">Status</TableCell>
+              <TableCell align="center">Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {packages.map((row) => (
-              <TableRow key={row.voucher}>
+              <TableRow key={row.voucher} hover="true">
                 <TableCell component="th" scope="row">
                   {row.voucher}
                 </TableCell>
                 <TableCell align="right">{row.postcode}</TableCell>
-                <TableCell align="right">{row.driver}</TableCell>
                 <TableCell align="right">{row.cluster_name}</TableCell>
-                <TableCell align="right">{row.status}</TableCell>
-                <TableCell align="right">
+                <TableCell align="right">{row.driver}</TableCell>
+                <TableCell align="center">{row.status}</TableCell>
+                <TableCell align="center">
+                  <Button aria-label="edit" onClick={() => handleEdit(1)}>
+                    Edit
+                  </Button>
+                  <Button aria-label="edit" onClick={() => handleEdit(1)}>
+                    Edit
+                  </Button>
                   <Button aria-label="edit" onClick={() => handleEdit(1)}>
                     Edit
                   </Button>

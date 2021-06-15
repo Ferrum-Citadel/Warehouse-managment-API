@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { TextField } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
 
 function Form() {
   const [value, setValue] = useState('');
@@ -34,13 +36,25 @@ function Form() {
       <h1>Skroutz Last Mile assignment</h1>
       <h2>Vaoucher input</h2>
       <form onSubmit={handleSubmit}>
-        <input
+        {/* <input
           type="text"
           spellCheck="false"
           value={value}
           onChange={handleChange}
+        /> */}
+        <TextField
+          variant="outlined"
+          label="Voucher"
+          size="small"
+          type="text"
+          spellCheck="False"
+          value={value}
+          onChange={handleChange}
         />
-        <button type="submit">Scan</button>
+        {/* <button type="submit">Scan</button> */}
+        <Button variant="outlined" type="submit" color="primary">
+          Scan
+        </Button>
         <p>{message}</p>
       </form>
     </>
