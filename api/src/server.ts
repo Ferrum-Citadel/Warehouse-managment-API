@@ -5,8 +5,9 @@ dotenv.config();
 import config from './config/config';
 
 // Importing controllers
-import * as packageController from './controllers/package';
-
+import * as packageGetController from './controllers/packageGet';
+import * as packageSetController from './controllers/packagePut';
+import * as driverController from './controllers/driver';
 //Create Express server
 const app: express.Application = express();
 
@@ -14,24 +15,36 @@ const app: express.Application = express();
 app.use(helmet());
 app.use(express.json());
 app.use(urlencoded({ extended: false }));
-
 /*--------------------------------------------------------------------------- */
 //Package GET routes
-app.get('/package/all', packageController.getAll);
-app.get('/package/scanned', packageController.getScanned);
-app.get('/package/unscanned', packageController.getUnscanned);
-app.get('/package/enroute', packageController.getEnRoute);
-app.get('/package/delivered', packageController.getDelivered);
-app.get(
-  '/status/:voucher',
-  packageController.statusMiddleware,
-  packageController.getStatusOne
-);
-app.get('/allstatus', packageController.getStatusAll);
-app.get('/cluster/:voucher', packageController.getCluster);
+app.get('/package/all', packageGetController.getAll);
+app.get('/package/scanned', packageGetController.getScanned);
+app.get('/package/unscanned', packageGetController.getUnscanned);
+app.get('/package/enroute', packageGetController.getEnRoute);
+app.get('/package/delivered', packageGetController.getDelivered);
+app.get('/status/:voucher', packageGetController.getStatusOne);
+app.get('/allstatus', packageGetController.getStatusAll);
+app.get('/cluster/:voucher', packageGetController.getCluster);
 //Package PUT routes
-app.put('/scan/:voucher', packageController.scanPackage);
-app.put('/enroute/:voucher', packageController.setEnRoute);
+app.put(
+  '/scan/:voucher',
+  packageSetController.validateVoucher,
+  packageSetController.scanPackage
+);
+app.put(
+  '/enroute/:voucher',
+  packageSetController.validateVoucher,
+  packageSetController.setEnRoute
+);
+app.put(
+  '/delivered/:voucher',
+  packageSetController.validateVoucher,
+  packageSetController.setDelivered
+);
+
+// Driver routes
+app.get('/driver/all', driverController.getAll);
+app.get('/driver/packages/:name', driverController.getAssignedPackages);
 
 app.listen(config.server.port, (): void => {
   console.log(

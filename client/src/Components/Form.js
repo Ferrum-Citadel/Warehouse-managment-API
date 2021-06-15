@@ -18,6 +18,7 @@ function Form() {
       if (response.message) {
         setMessage(response.message);
       }
+      setValue('');
     } catch (error) {
       console.error(error);
     }
@@ -30,7 +31,7 @@ function Form() {
 
   return (
     <>
-      <h1>Skroutz Last Mile assignement</h1>
+      <h1>Skroutz Last Mile assignment</h1>
       <h2>Vaoucher input</h2>
       <form onSubmit={handleSubmit}>
         <input

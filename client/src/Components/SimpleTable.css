@@ -1,0 +1,29 @@
+.grid {
+  width: 70vw;
+  margin: 50px auto;
+  border: thick double gray;
+}
+
+.grid .grid-row {
+  border-bottom: 1px solid gray;
+  display: flex;
+}
+
+.grid-column-title {
+  width: 25%;
+  padding: 15px 0;
+  border: 1px solid gray;
+  font-weight: bold;
+}
+
+.grid .grid-row .grid-column-4 {
+  width: 25%;
+  padding: 10px 0;
+  border: 1px solid gray;
+}
+.container {
+  width: 70vw;
+  display: flex;
+  margin: 20px auto;
+  /* border: 1px solid gray; */
+}
