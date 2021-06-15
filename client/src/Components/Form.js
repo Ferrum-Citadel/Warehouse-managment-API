@@ -14,7 +14,7 @@ function Form() {
         .then((response) => response.json())
         .then((response) => {
           if (response.message) {
-            setMessage(response.message);
+            setMessage(value + '-' + response.message);
           }
         });
 
