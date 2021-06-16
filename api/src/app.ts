@@ -1,6 +1,7 @@
 import express, { urlencoded } from 'express';
 import helmet from 'helmet';
 import dotenv from 'dotenv';
+import cors from 'cors';
 dotenv.config();
 
 // Importing controllers
@@ -12,6 +13,7 @@ import * as stateController from './controllers/state';
 const app: express.Application = express();
 
 // Express config
+// app.use(cors());
 app.use(helmet());
 app.use(express.json());
 app.use(urlencoded({ extended: false }));
