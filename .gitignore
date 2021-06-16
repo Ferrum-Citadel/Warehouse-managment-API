@@ -1,6 +1,6 @@
 # Server ignore
 /api/node_modules
-/api/.env
+
 
 # Client ignore
 # dependencies
