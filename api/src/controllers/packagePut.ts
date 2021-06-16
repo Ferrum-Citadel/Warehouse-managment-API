@@ -252,7 +252,7 @@ export const setDelivered = async (
     );
 
     results = await Query(connection, query);
-    console.log(results);
+
     const driver = (results[0] as any).name;
     // Set driver as available after the package is delivered
     query = mysql.format(`UPDATE Drivers SET available=TRUE WHERE name=?`, [

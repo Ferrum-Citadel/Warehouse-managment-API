@@ -29,7 +29,7 @@ function SimpleTable() {
   //We fetch package state every second
   useEffect(() => {
     getResults();
-    const refresh = setInterval(getResults, 1000);
+    const refresh = setInterval(getResults, 500);
     return () => clearInterval(refresh);
   }, []);
 
