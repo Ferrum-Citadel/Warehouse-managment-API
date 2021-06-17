@@ -47,7 +47,8 @@ app.put(
 
 // Driver routes-----------------------------------------------------------------
 app.get('/driver/all', driverController.getAll);
-app.get('/driver/packages/:name', driverController.getAssignedPackages);
+app.get('/assigned/:name', driverController.getAssignedPackages);
+app.get('/assigned/all', driverController.getAllAssignedPackages);
 
 //State route--------------------------------------------------------------------
 app.delete('/reset', stateController.resetState);

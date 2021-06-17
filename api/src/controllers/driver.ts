@@ -8,7 +8,7 @@ export const getAll = async (
   res: Response
 ): Promise<Response> => {
   try {
-    const query = 'SELECT * FROM Drivers';
+    const query = 'SELECT name,cluster_id,available FROM Drivers';
     const connection = await Connect();
 
     const results = await Query(connection, query);
@@ -36,7 +36,7 @@ export const getAssignedPackages = async (
 
     const results = await Query(connection, query);
     connection.end();
-    console.log(results);
+
     return res.status(200).json({ results });
   } catch (err) {
     return res.status(500).json({ message: err.message });

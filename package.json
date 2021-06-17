@@ -1,0 +1,22 @@
+{
+  "name": "slm-assignment",
+  "version": "1.0.0",
+  "description": "Implementation of SLM assignment",
+  "scripts": {
+    "prepare": "cd api && npm install --silent && cd ../client && npm install --silent",
+    "start": "concurrently --kill-others  \" cd api && npm start\" \" cd client && npm start\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ferrum-Citadel/SLM-assignment.git"
+  },
+  "author": "Petros Sidirokastritis",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Ferrum-Citadel/SLM-assignment/issues"
+  },
+  "homepage": "https://github.com/Ferrum-Citadel/SLM-assignment#readme",
+  "dependencies": {
+    "concurrently": "^6.2.0"
+  }
+}

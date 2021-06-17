@@ -34,17 +34,11 @@ function Form() {
 
   return (
     <>
-      <h1>Skroutz Last Mile assignment</h1>
+      <h1 style={{ color: 'orange' }}>Skroutz Last Mile assignment</h1>
       <Divider variant="middle" />
       <h2 style={{ marginTop: '10px' }}>Voucher input </h2>
 
       <form className="form" onSubmit={handleSubmit}>
-        {/* <input
-          type="text"
-          spellCheck="false"
-          value={value}
-          onChange={handleChange}
-        /> */}
         <TextField
           label="Voucher"
           variant="outlined"
