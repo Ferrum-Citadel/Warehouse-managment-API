@@ -1,16 +1,23 @@
 <!-- PROJECT LOGO -->
 
-![GitHub top language](https://img.shields.io/github/languages/top/Ferrum-Citadel/SLM-assignment)
+![Node.js](https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white)
+![Express.js](https://img.shields.io/badge/Express.js-404D59?style=for-the-badge)
+![REACT](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![MariaDB](https://img.shields.io/badge/MySQL-00000F?style=for-the-badge&logo=mysql&logoColor=white)
+![GitHub top language](https://img.shields.io/github/languages/top/Ferrum-Citadel/SLM-assignment?style=for-the-badge)
+![GitHub language count](https://img.shields.io/github/languages/count/Ferrum-Citadel/SLM-assignment?style=for-the-badge)
+![GitHub last commit](https://img.shields.io/github/last-commit/Ferrum-Citadel/SLM-assignment?style=for-the-badge)
 <br />
 
 <p align="center">
   <a href="https://github.com/Ferrum-Citadel/SLM-assignment">
   </a>
 
-  <h1 align="center">Warehouse managment API-slm assignment</h3>
+  <h1 align="center">Warehouse managment API</h1>
+  <h3 align="center">SLM assignment</h3>
 
   <p align="center">
-    A simple RESTful API with react front-end for the slm assignment
+    A simple RESTful (Node.js,Express.js) API written in Typescript with React front-end.
     <br />
     <a href="https://github.com/ferrum-citadel/SLM-assignment"><strong>Explore the docs »</strong></a>
     <br />
@@ -60,6 +67,10 @@ Simple REST api and webpage simulating warehouse management operations.
 - [Create-react-app](https://create-react-app.dev/)
 - [MariaDB](https://mariadb.org/)
 
+### Database ER diagram:
+
+![screenshot](https://github.com/Ferrum-Citadel/SLM-assignment/blob/master/images/er-diagram.png?raw=true)
+
 ---
 
 <!-- GETTING STARTED -->
@@ -98,27 +109,28 @@ To get a local copy up and running follow these steps.
    19  "proxy": "http://backend:5000",
    ```
 
-3. From the root directory run:
+3. From the root directory run:  
+   <sup>(This takes some time, it says: `"You can now view client in the browser."` when finished)</sup>
 
    ```sh
-   docker-compose up
+   sudo docker-compose up
    ```
 
    or:
 
    ```sh
-   docker-compose up -d
+   sudo docker-compose up -d
    ```
 
    If you make any change to the code you have to run:
 
    ```sh
-   docker-compose up --build
+   sudo docker-compose up --build
    ```
 
 ### - Install in unix systems
 
-### - Set up the database
+#### - Set up the database
 
 1. First, log in to MySQL as root or another user with sufficient privileges to create new databases:
 
@@ -148,7 +160,7 @@ To get a local copy up and running follow these steps.
 
 ## - Run the project
 
-1. !!! IMPORTANT !!!  
+1. (This is not needed if you run it with docker)  
    Fill in the newly created database name, mysql user and password information in the **`".env"`** and **`".docker.env"`** files located in **`"./api/.env"`** and **`"./api/.docker.env"`**. **DON'T** change **PORT**, **DB_HOST** and **HOST**:
 
    ```sh
@@ -184,7 +196,7 @@ To get a local copy up and running follow these steps.
 
 After running the project and navigating to the website hosted at `http://localhost:3000` you should see this:
 
-![screenshot](./images/screenshot.pgn)
+![screenshot](https://github.com/Ferrum-Citadel/SLM-assignment/blob/master/images/screenshot.png?raw=true)
 
 Here we can run different live usage scenarios and test the API behaviour.  
 The "correct" usage would be to:

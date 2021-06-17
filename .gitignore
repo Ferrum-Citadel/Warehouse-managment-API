@@ -1,5 +1,6 @@
 # Server ignore
 /api/node_modules
+/api/build
 
 
 # Client ignore
