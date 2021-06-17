@@ -5,7 +5,6 @@
 ![REACT](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
 ![MariaDB](https://img.shields.io/badge/MySQL-00000F?style=for-the-badge&logo=mysql&logoColor=white)
 ![GitHub top language](https://img.shields.io/github/languages/top/Ferrum-Citadel/SLM-assignment?style=for-the-badge)
-![GitHub language count](https://img.shields.io/github/languages/count/Ferrum-Citadel/SLM-assignment?style=for-the-badge)
 ![GitHub last commit](https://img.shields.io/github/last-commit/Ferrum-Citadel/SLM-assignment?style=for-the-badge)
 <br />
 
