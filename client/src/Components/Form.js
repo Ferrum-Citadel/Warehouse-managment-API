@@ -36,7 +36,7 @@ function Form() {
     <>
       <h1>Skroutz Last Mile assignment</h1>
       <Divider variant="middle" />
-      <h2 style={{ marginTop: '50px' }}>Voucher input </h2>
+      <h2 style={{ marginTop: '10px' }}>Voucher input </h2>
 
       <form className="form" onSubmit={handleSubmit}>
         {/* <input

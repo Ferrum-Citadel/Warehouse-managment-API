@@ -4,7 +4,7 @@ services:
   mariadb:
     image: mariadb:10.5
     restart: always
-    env_file: ./api/.env
+    env_file: ./api/.docker.env
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: skroutzdb
@@ -13,7 +13,7 @@ services:
     volumes:
       - ./mysql-dump:/docker-entrypoint-initdb.d
   backend:
-    env_file: "./api/.env"
+    env_file: "./api/.docker.env"
     build:
       context: ./api
       dockerfile: ./Dockerfile

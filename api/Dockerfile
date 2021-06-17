@@ -1,4 +1,4 @@
-FROM node:16.3.0
+FROM node:14-alpine
 
 LABEL version="1.0"
 LABEL description="This is the base docker for the Skroutz Last Mile assignment"
@@ -7,8 +7,7 @@ LABEL description="This is the base docker for the Skroutz Last Mile assignment"
 WORKDIR /project
 
 COPY package*.json ./
-RUN ls
-RUN npm install 
+RUN npm install --silent
 COPY . .
 
 EXPOSE 5000

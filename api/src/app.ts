@@ -13,7 +13,7 @@ import * as stateController from './controllers/state';
 const app: express.Application = express();
 
 // Express config
-// app.use(cors());
+app.use(cors());
 app.use(helmet());
 app.use(express.json());
 app.use(urlencoded({ extended: false }));
