@@ -8,7 +8,7 @@ WORKDIR /project
 
 COPY package*.json ./
 
-RUN npm install ci
+RUN npm install 
 
 COPY . .
 

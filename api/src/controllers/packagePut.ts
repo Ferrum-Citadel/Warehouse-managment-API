@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { Connect, Query } from '../config/mysql';
+import { Query } from '../config/mysql';
 import mysql from 'mysql2';
 
 // Controller for validating given vouchers using RegEx
@@ -28,9 +28,8 @@ export const scanPackage = async (
       [req.params.voucher]
     );
 
-    const connection = await Connect();
-    let results = await Query(connection, query);
-    connection.end();
+    let results = await Query(query);
+
     results = JSON.parse(JSON.stringify(results));
 
     //If no rows were affected there is no package with such voucher
@@ -50,57 +49,8 @@ export const scanPackage = async (
   }
 };
 
-// const simulateDelivery = async (
-//   connection: mysql.Connection,
-//   voucher: string
-// ): Promise<boolean> => {
-//   try {
-//     const query = mysql.format(
-//       `SELECT d.name, d.available
-//   FROM Packages p JOIN Drivers d ON p.cluster_id=d.cluster_id
-//   WHERE  p.voucher = ? AND p.en_route =FALSE AND p.delivered =FALSE
-//   ORDER BY d.name;`,
-//       [voucher]
-//     );
-
-//     const results = await Query(connection, query);
-
-//     const available = (results[0] as any).available;
-//     const driver = (results[0] as any).name;
-
-//     if (available) {
-//       const query = mysql.format(
-//         `UPDATE Drivers SET available=FALSE where name=?`,
-//         [driver]
-//       );
-//       await Query(connection, query);
-
-//       const deliveryTime: number = Math.floor(
-//         Math.random() * (10000 - 5000 + 1) + 5000
-//       );
-
-//       setTimeout((): void => {
-//         const query = mysql.format(
-//           `UPDATE Drivers SET available=TRUE where name=?`,
-//           [driver]
-//         );
-//         Query(connection, query);
-//         connection.end();
-//       }, deliveryTime);
-//       return true;
-//     }
-//     return false;
-//   } catch (err) {
-//     console.error(err);
-//     return false;
-//   }
-// };
-
 // Simulates a delivery driver picking up a package depending their availability
-const simulateDelivery = async (
-  connection: mysql.Connection,
-  voucher: string
-): Promise<boolean> => {
+const simulateDelivery = async (voucher: string): Promise<boolean> => {
   try {
     const query = mysql.format(
       `SELECT d.name, d.available 
@@ -110,7 +60,7 @@ const simulateDelivery = async (
       [voucher]
     );
 
-    const results = await Query(connection, query);
+    const results = await Query(query);
 
     const available = (results[0] as any).available;
     const driver = (results[0] as any).name;
@@ -120,7 +70,7 @@ const simulateDelivery = async (
         `UPDATE Drivers SET available=FALSE where name=?`,
         [driver]
       );
-      await Query(connection, query);
+      await Query(query);
 
       return true;
     }
@@ -137,13 +87,12 @@ export const setEnRoute = async (
   res: Response
 ): Promise<Response> => {
   try {
-    const connection = await Connect();
     //Checking if the given package exist in db and  is scanned
     let query = mysql.format(
       'SELECT scanned,en_route,delivered FROM Packages WHERE voucher=?',
       [req.params.voucher]
     );
-    const results = await Query(connection, query);
+    const results = await Query(query);
 
     // Checking if such package exists first
     if (results.length === 0) {
@@ -169,20 +118,18 @@ export const setEnRoute = async (
     }
 
     // If the driver is available we simulate delivery
-    if (await simulateDelivery(connection, req.params.voucher)) {
+    if (await simulateDelivery(req.params.voucher)) {
       //If the package exists and is scanned then we set en route
       query = mysql.format(
         'UPDATE Packages SET en_route=TRUE WHERE voucher=?',
         [req.params.voucher]
       );
-      await Query(connection, query);
-      connection.end;
+      await Query(query);
 
       return res
         .status(200)
         .json({ message: 'Package is en route to delivery' });
     }
-    connection.end();
 
     return res
       .status(409)
@@ -201,14 +148,12 @@ export const setDelivered = async (
   res: Response
 ): Promise<Response> => {
   try {
-    const connection = await Connect();
-
     //Checking if the given package exist in db and  is scanned
     let query = mysql.format(
       'SELECT scanned, en_route, delivered FROM Packages WHERE voucher=?',
       [req.params.voucher]
     );
-    let results = await Query(connection, query);
+    let results = await Query(query);
 
     // Checking if such package exists first
     if (results.length === 0) {
@@ -240,7 +185,7 @@ export const setDelivered = async (
       [req.params.voucher]
     );
 
-    results = await Query(connection, query);
+    results = await Query(query);
 
     // Find assigned drivers name
     query = mysql.format(
@@ -251,15 +196,15 @@ export const setDelivered = async (
       [req.params.voucher]
     );
 
-    results = await Query(connection, query);
+    results = await Query(query);
 
     const driver = (results[0] as any).name;
     // Set driver as available after the package is delivered
     query = mysql.format(`UPDATE Drivers SET available=TRUE WHERE name=?`, [
       driver,
     ]);
-    Query(connection, query);
-    connection.end();
+    Query(query);
+
     return res.status(200).json({ message: 'Package is delivered' });
   } catch (error) {
     return res.status(500).json({

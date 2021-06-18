@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { Connect, Query } from '../config/mysql';
+import { Query } from '../config/mysql';
 import mysql from 'mysql2';
 
 // Controller that returns all packages from database
@@ -10,10 +10,8 @@ export const getPackages = async (
   try {
     const query = 'SELECT * FROM Packages';
 
-    const connection = await Connect();
+    const results = await Query(query);
 
-    const results = await Query(connection, query);
-    connection.end();
     return res.status(200).json({ results });
   } catch (error) {
     return res.status(500).json({
@@ -30,11 +28,9 @@ export const getScanned = async (
   try {
     // Defining query
     const query = 'SELECT * FROM Packages WHERE scanned=TRUE';
-    // Awaiting connection to db
-    const connection = await Connect();
     // Implementing the query
-    const results = await Query(connection, query);
-    connection.end();
+    const results = await Query(query);
+
     return res.status(200).json({ results });
   } catch (error) {
     return res.status(500).json({
@@ -52,11 +48,9 @@ export const getUnscanned = async (
   try {
     // Defining query
     const query = 'SELECT * FROM Packages WHERE scanned=FALSE';
-    // Awaiting connection to db
-    const connection = await Connect();
     // Implementing the query
-    const results = await Query(connection, query);
-    connection.end();
+    const results = await Query(query);
+
     return res.status(200).json({ results });
   } catch (error) {
     return res.status(500).json({
@@ -74,11 +68,9 @@ export const getEnRoute = async (
   try {
     // Defining query
     const query = 'SELECT * FROM Packages WHERE en_route=TRUE';
-    // Awaiting connection to db
-    const connection = await Connect();
-    // Implementing the query
-    const results = await Query(connection, query);
-    connection.end();
+    // Awaiting pool to db
+    const results = await Query(query);
+
     return res.status(200).json({ results });
   } catch (error) {
     return res.status(500).json({
@@ -96,11 +88,9 @@ export const getDelivered = async (
   try {
     // Defining query
     const query = 'SELECT * FROM Packages WHERE delivered=TRUE';
-    // Awaiting connection to db
-    const connection = await Connect();
     // Implementing the query
-    const results = await Query(connection, query);
-    connection.end();
+    const results = await Query(query);
+
     return res.status(200).json({ results });
   } catch (error) {
     return res.status(500).json({
@@ -121,12 +111,9 @@ export const getStatusOne = async (
       'SELECT scanned, delivered, en_route FROM Packages WHERE voucher=?',
       [req.params.voucher]
     );
-    // Awaiting connection to db
-    const connection = await Connect();
     // Implementing the query
-    const results = await Query(connection, query);
+    const results = await Query(query);
 
-    connection.end();
     // Parse results to constants
     if (results.length !== 0) {
       const isScanned = results[0].scanned;
@@ -165,10 +152,8 @@ export const getAll = async (
     const query =
       'SELECT p.voucher, p.postcode, p.scanned, p.en_route, p.delivered, c.name, d.name AS driver_name, d.available AS driver_status FROM Packages AS p JOIN Clusters AS c ON p.cluster_id = c.cluster_id JOIN Drivers AS d ON c.cluster_id=d.cluster_id ORDER BY p.voucher';
 
-    // Awaiting connection to db
-    const connection = await Connect();
     // Implementing the query
-    const queryResults = await Query(connection, query);
+    const queryResults = await Query(query);
 
     //Inline interface definition for returned status results
     const statusArr: {
@@ -220,7 +205,7 @@ export const getAll = async (
           driver_status,
         });
       });
-      connection.end();
+
       return res.status(200).json({ statusArr });
     } else {
       return res.status(404).json({ message: 'No stock' });
@@ -244,11 +229,9 @@ export const getCluster = async (
       'SELECT scanned, delivered FROM Packages WHERE voucher=?',
       [req.params.voucher]
     );
-    // Awaiting connection to db
-    const connection = await Connect();
     // Implementing the query
-    const results = await Query(connection, query);
-    connection.end();
+    const results = await Query(query);
+
     return res.status(200).json({ results });
   } catch (error) {
     return res.status(500).json({

@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { Connect, Query } from '../config/mysql';
+import { Query } from '../config/mysql';
 import mysql from 'mysql2';
 
 // Returns all drivers
@@ -9,10 +9,8 @@ export const getAll = async (
 ): Promise<Response> => {
   try {
     const query = 'SELECT name,cluster_id,available FROM Drivers';
-    const connection = await Connect();
 
-    const results = await Query(connection, query);
-    connection.end();
+    const results = await Query(query);
 
     return res.status(200).json({ results });
   } catch (err) {
@@ -32,10 +30,8 @@ export const getAssignedPackages = async (
       WHERE d.name = ? AND p.scanned=TRUE AND p.en_route =FALSE AND p.delivered =FALSE;`,
       [req.params.name]
     );
-    const connection = await Connect();
 
-    const results = await Query(connection, query);
-    connection.end();
+    const results = await Query(query);
 
     return res.status(200).json({ results });
   } catch (err) {
@@ -56,10 +52,7 @@ export const getAllAssignedPackages = async (
       [req.params.name]
     );
 
-    const connection = await Connect();
-
-    const results = await Query(connection, query);
-    connection.end();
+    const results = await Query(query);
 
     return res.status(200).json({ results });
   } catch (err) {

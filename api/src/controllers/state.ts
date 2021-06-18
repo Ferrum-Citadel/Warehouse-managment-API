@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { Connect, Query } from '../config/mysql';
+import { Query } from '../config/mysql';
 
 //Controller that resets the database state
 export const resetState = async (
@@ -10,12 +10,9 @@ export const resetState = async (
     const query1 =
       'UPDATE Packages SET scanned=FALSE, en_route=FALSE, delivered=FALSE';
     const query2 = 'UPDATE Drivers SET available=TRUE';
-    const connection = await Connect();
 
-    await Query(connection, query1);
-    await Query(connection, query2);
-
-    connection.end();
+    await Query(query1);
+    await Query(query2);
 
     return res.status(200).json({ message: 'Project state is reset' });
   } catch (error) {
