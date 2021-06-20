@@ -19,6 +19,7 @@ function SimpleTable() {
     fetch('/all')
       .then((response) => response.json())
       .then((response) => {
+        console.log(response);
         setPackages(response.statusArr); //Set api response into state
       })
       .catch((err) => {

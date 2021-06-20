@@ -18,5 +18,9 @@
   "homepage": "https://github.com/Ferrum-Citadel/SLM-assignment#readme",
   "dependencies": {
     "concurrently": "^6.2.0"
+  },
+  "devDependencies": {
+    "@types/supertest": "^2.0.11",
+    "supertest": "^6.1.3"
   }
 }

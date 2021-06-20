@@ -6,4 +6,5 @@ export interface Package {
   cluster: BasicCluster;
   scanned: boolean;
   delivered: boolean;
+  en_route: boolean;
 }
