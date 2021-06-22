@@ -197,7 +197,7 @@ To get a local copy up and running follow these steps.
 
 The tests are implemented using jest.
 
-First install node_modules in the api directory with: 2. Install NPM packages in the root directory
+First install node_modules in the api directory with:
 
 ```bash
 npm install
