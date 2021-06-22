@@ -1,4 +1,4 @@
-import mysql, { RowDataPacket } from 'mysql2';
+import { RowDataPacket } from 'mysql2';
 import { createPool, Pool } from 'mysql2';
 import config from './config';
 
@@ -15,7 +15,7 @@ const params = {
 const pool: Pool = createPool(params);
 
 // Function that wraps query execution in a Promise
-const Query = async (query: string): Promise<mysql.RowDataPacket[]> =>
+const Query = async (query: string): Promise<any> =>
   await new Promise((resolve, reject) => {
     pool.getConnection((err, connection) => {
       if (err) {

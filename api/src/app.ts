@@ -40,15 +40,15 @@ app.put(
   packageSetController.setEnRoute
 );
 app.put(
-  '/delivered/:voucher',
+  '/deliver/:voucher',
   packageSetController.validateVoucher,
   packageSetController.setDelivered
 );
 
 // Driver routes-----------------------------------------------------------------
 app.get('/driver/all', driverController.getAll);
-app.get('/assigned/:name', driverController.getAssignedPackages);
-app.get('/assigned/all', driverController.getAllAssignedPackages);
+app.get('/assigned/packages/:name', driverController.getAssignedPackages);
+app.get('/assigned/cluster/:name', driverController.getAssignedCluster);
 
 //State route--------------------------------------------------------------------
 app.delete('/reset', stateController.resetState);

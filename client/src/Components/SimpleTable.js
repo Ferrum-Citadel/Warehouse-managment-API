@@ -19,6 +19,7 @@ function SimpleTable() {
     fetch('/all')
       .then((response) => response.json())
       .then((response) => {
+        console.log(response);
         setPackages(response.statusArr); //Set api response into state
       })
       .catch((err) => {
@@ -29,7 +30,7 @@ function SimpleTable() {
   //We fetch package state every second
   useEffect(() => {
     getResults();
-    const refresh = setInterval(getResults, 800);
+    const refresh = setInterval(getResults, 600);
     return () => clearInterval(refresh);
   }, []);
 
@@ -49,7 +50,7 @@ function SimpleTable() {
 
   // Sets Package delivered
   const handleDelivered = (voucher) => {
-    fetch(`/delivered/${voucher}`, { method: 'PUT' })
+    fetch(`/deliver/${voucher}`, { method: 'PUT' })
       .then((response) => response.json())
       .then((response) => {
         if (response.message) {

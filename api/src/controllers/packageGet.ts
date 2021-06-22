@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
-import { Query } from '../config/mysql';
-import mysql from 'mysql2';
+import * as PackageService from '../services/package.get.service';
 
 // Controller that returns all packages from database
 export const getPackages = async (
@@ -8,10 +7,7 @@ export const getPackages = async (
   res: Response
 ): Promise<Response> => {
   try {
-    const query = 'SELECT * FROM Packages';
-
-    const results = await Query(query);
-
+    const results = await PackageService.getPackages();
     return res.status(200).json({ results });
   } catch (error) {
     return res.status(500).json({
@@ -26,11 +22,7 @@ export const getScanned = async (
   res: Response
 ): Promise<Response> => {
   try {
-    // Defining query
-    const query = 'SELECT * FROM Packages WHERE scanned=TRUE';
-    // Implementing the query
-    const results = await Query(query);
-
+    const results = await PackageService.getScanned();
     return res.status(200).json({ results });
   } catch (error) {
     return res.status(500).json({
@@ -46,10 +38,7 @@ export const getUnscanned = async (
   res: Response
 ): Promise<Response> => {
   try {
-    // Defining query
-    const query = 'SELECT * FROM Packages WHERE scanned=FALSE';
-    // Implementing the query
-    const results = await Query(query);
+    const results = await PackageService.getUnscanned();
 
     return res.status(200).json({ results });
   } catch (error) {
@@ -66,11 +55,7 @@ export const getEnRoute = async (
   res: Response
 ): Promise<Response> => {
   try {
-    // Defining query
-    const query = 'SELECT * FROM Packages WHERE en_route=TRUE';
-    // Awaiting pool to db
-    const results = await Query(query);
-
+    const results = await PackageService.getEnRoute();
     return res.status(200).json({ results });
   } catch (error) {
     return res.status(500).json({
@@ -86,10 +71,7 @@ export const getDelivered = async (
   res: Response
 ): Promise<Response> => {
   try {
-    // Defining query
-    const query = 'SELECT * FROM Packages WHERE delivered=TRUE';
-    // Implementing the query
-    const results = await Query(query);
+    const results = await PackageService.getDelivered();
 
     return res.status(200).json({ results });
   } catch (error) {
@@ -100,44 +82,15 @@ export const getDelivered = async (
   }
 };
 
-//Middleware that finds a package status by voucher
+//Controller that finds a package status by voucher
 export const getStatusOne = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
   try {
-    // Defining query
-    const query = mysql.format(
-      'SELECT scanned, delivered, en_route FROM Packages WHERE voucher=?',
-      [req.params.voucher]
-    );
-    // Implementing the query
-    const results = await Query(query);
-
-    // Parse results to constants
-    if (results.length !== 0) {
-      const isScanned = results[0].scanned;
-      const isDelivered = results[0].delivered;
-      const IsEnroute = results[0].en_route;
-      // Check package status from db
-      if (isDelivered) {
-        return res.status(200).json({ message: 'Package is delivered' });
-      } else if (IsEnroute) {
-        return res
-          .status(200)
-          .json({ message: 'Package is en route to delivery' });
-      } else if (isScanned) {
-        return res
-          .status(200)
-          .json({ message: 'Package waiting to be picked up by driver' });
-      } else {
-        return res.status(200).json({ message: 'Not scanned' });
-      }
-    } else {
-      return res.status(200).json({ message: 'No such package' });
-    }
+    const message = await PackageService.getStatusOne(req.params.voucher);
+    return res.status(200).json({ message: message });
   } catch (error) {
-    console.error(error);
     return res.status(500).json({ message: error.message });
   }
 };
@@ -148,67 +101,11 @@ export const getAll = async (
   res: Response
 ): Promise<Response> => {
   try {
-    // Defining query
-    const query =
-      'SELECT p.voucher, p.postcode, p.scanned, p.en_route, p.delivered, c.name, d.name AS driver_name, d.available AS driver_status FROM Packages AS p JOIN Clusters AS c ON p.cluster_id = c.cluster_id JOIN Drivers AS d ON c.cluster_id=d.cluster_id ORDER BY p.voucher';
-
-    // Implementing the query
-    const queryResults = await Query(query);
-
-    //Inline interface definition for returned status results
-    const statusArr: {
-      voucher: string;
-      postcode: string;
-      cluster_name: string;
-      status: string;
-      driver: string;
-      driver_status: string;
-    }[] = [];
-
-    // If the query returned results we check for the sttatus state
-    if (queryResults.length !== 0) {
-      queryResults.forEach((pckg) => {
-        const isScanned = pckg.scanned;
-        const isDelivered = pckg.delivered;
-        const IsEnroute = pckg.en_route;
-        const postcode = pckg.postcode as string;
-        const cluster_name = pckg.name as string;
-        const voucher = pckg.voucher as string;
-        const driver = pckg.driver_name as string;
-        const available = pckg.driver_status as number;
-
-        let driver_status: string;
-        if (available) {
-          driver_status = 'Available';
-        } else {
-          driver_status = 'Unavailable';
-        }
-
-        let status: string;
-        // Check package status from db
-        if (isDelivered) {
-          status = 'Package is delivered';
-        } else if (IsEnroute) {
-          status = 'Package is en route to delivery';
-        } else if (isScanned) {
-          status = 'Package Scanned and waiting for delivery';
-        } else {
-          status = 'Not scanned';
-        }
-        // Pushing needed information to a new array that will returned
-        statusArr.push({
-          voucher,
-          postcode,
-          cluster_name,
-          status,
-          driver,
-          driver_status,
-        });
-      });
-
+    const statusArr = await PackageService.getAll();
+    if (statusArr.length) {
       return res.status(200).json({ statusArr });
     } else {
-      return res.status(404).json({ message: 'No stock' });
+      return res.status(400).json({ message: 'No stock' });
     }
   } catch (err) {
     return res.status(500).json({
@@ -224,15 +121,9 @@ export const getCluster = async (
   res: Response
 ): Promise<Response> => {
   try {
-    // Defining query
-    const query = mysql.format(
-      'SELECT scanned, delivered FROM Packages WHERE voucher=?',
-      [req.params.voucher]
-    );
-    // Implementing the query
-    const results = await Query(query);
+    const result = await PackageService.getCluster(req.params.voucher);
 
-    return res.status(200).json({ results });
+    return res.status(200).json({ result });
   } catch (error) {
     return res.status(500).json({
       message: error.message,
