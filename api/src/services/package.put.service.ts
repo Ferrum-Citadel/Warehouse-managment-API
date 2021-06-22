@@ -58,7 +58,6 @@ export const simulateDelivery = async (voucher: string): Promise<boolean> => {
 
     const available = (results[0] as any).available;
     const driver = (results[0] as any).name;
-
     if (available) {
       const query = mysql.format(
         `UPDATE Drivers SET available=FALSE where name=?`,
@@ -85,7 +84,6 @@ export const setEnRoute = async (
       [voucher]
     );
     const results = await Query(query);
-
     const returnValues = {
       status: 200,
       message: 'Package is en route to delivery',
@@ -94,6 +92,7 @@ export const setEnRoute = async (
     if (results.length === 0) {
       returnValues.status = 400;
       returnValues.message = 'No such package found';
+      return returnValues;
     }
     const isScanned = results[0].scanned;
     const isEnRoute = results[0].en_route;
@@ -130,6 +129,7 @@ export const setEnRoute = async (
     }
     return returnValues;
   } catch (error) {
+    console.error(error);
     return error;
   }
 };
@@ -140,7 +140,7 @@ export const setDelivered = async (
   try {
     //Checking if the given package exist in db and  is scanned
     let query = mysql.format(
-      'SELECT scanned, en_route, delivered FROM Packages WHERE voucher=?',
+      'SELECT scanned,en_route,delivered FROM Packages WHERE voucher=?',
       [voucher]
     );
     let results = await Query(query);
@@ -153,6 +153,7 @@ export const setDelivered = async (
     if (results.length === 0) {
       returnValues.status = 400;
       returnValues.message = 'No such package found';
+      return returnValues;
     }
 
     // And now checking if its scanned and  if its en_route

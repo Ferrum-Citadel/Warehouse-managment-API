@@ -40,7 +40,7 @@ app.put(
   packageSetController.setEnRoute
 );
 app.put(
-  '/delivered/:voucher',
+  '/deliver/:voucher',
   packageSetController.validateVoucher,
   packageSetController.setDelivered
 );

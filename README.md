@@ -228,13 +228,13 @@ Running on **http://localhost:5000/**
 - **GET** - **`/package/delivered`**
 - **GET** - **`/package/delivered`**
 - **GET** - **`/driver/all`**
-- **GET** - **`/assigned/:driverName`** (returns all scanned packages assigned to the given driver)
-- **GET** - **`/assigned/all`** (returns all scanned packages and their assigned drivers)
+- **GET** - **`/assigned/packages/:driverName`** (returns all scanned packages assigned to the given driver)
+- **GET** - **`/assigned/cluster/:driverName`**
 - **GET** - **`/status/:voucher`**
 - **GET** - **`/cluster/:voucher`**
 - **PUT** - **`/scan/:voucher`**
 - **PUT** - **`/enroute/:voucher`**
-- **PUT** - **`/delivered/:voucher`**
+- **PUT** - **`/deliver/:voucher`**
 - **DELETE** - **`/reset`** (resets the database state)
 
 ## License
