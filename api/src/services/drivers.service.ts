@@ -13,6 +13,7 @@ export const getAll = async (): Promise<RowDataPacket[]> => {
   }
 };
 
+//Returns the scanned packages assigned to given driver(Not those en route and delivered)
 export const getAssignedPackages = async (
   driver: string
 ): Promise<RowDataPacket[]> => {

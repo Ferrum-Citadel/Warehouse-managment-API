@@ -24,9 +24,17 @@ app.get('/package/scanned', packageGetController.getScanned);
 app.get('/package/unscanned', packageGetController.getUnscanned);
 app.get('/package/enroute', packageGetController.getEnRoute);
 app.get('/package/delivered', packageGetController.getDelivered);
-app.get('/status/:voucher', packageGetController.getStatusOne);
+app.get(
+  '/status/:voucher',
+  packageSetController.validateVoucher,
+  packageGetController.getStatusOne
+);
 app.get('/all', packageGetController.getAll);
-app.get('/cluster/:voucher', packageGetController.getCluster);
+app.get(
+  '/cluster/:voucher',
+  packageSetController.validateVoucher,
+  packageGetController.getCluster
+);
 
 //Package PUT routes-------------------------------------------------------------
 app.put(

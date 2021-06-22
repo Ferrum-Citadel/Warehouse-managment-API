@@ -193,7 +193,31 @@ To get a local copy up and running follow these steps.
 
 ## Testing
 
-After running the project and navigating to the website hosted at `http://localhost:3000` you should see this:
+### Automated Unit tests:
+
+The tests are implemented using jest.
+
+First install node_modules in the api directory with: 2. Install NPM packages in the root directory
+
+```bash
+npm install
+```
+
+then run the unit tests with:
+
+```bash
+npm test
+```
+
+OR
+
+```bash
+npm test -- --coverage
+```
+
+to see code coverage.
+
+After running the whole project and navigating to the website hosted at `http://localhost:3000` you should see this:
 
 ![screenshot](https://github.com/Ferrum-Citadel/SLM-assignment/blob/master/images/screenshot.png?raw=true)
 

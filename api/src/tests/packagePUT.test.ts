@@ -145,7 +145,7 @@ describe('setEnroute service', () => {
     );
   });
 });
-
+//*************************************************************************************************************/
 describe('setDelivered service', () => {
   it('returns 200 code and message: Package is delivered', async () => {
     const mockFirstQueryResult = [{ scanned: 1, en_route: 1, delivered: 0 }];
